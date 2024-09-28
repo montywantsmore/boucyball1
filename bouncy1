@@ -1,0 +1,68 @@
+import pygame
+import math
+import sys
+
+# Initialize Pygame
+pygame.init()
+
+# Constants
+WIDTH, HEIGHT = 800, 600
+LARGE_CIRCLE_RADIUS = 250
+BALL_RADIUS = 20
+BALL_COLOR = (0, 0, 255)
+BACKGROUND_COLOR = (255, 255, 255)
+BUMP_SOUND = 'despacito.wav'  # Path to the audio file
+FPS = 60
+
+# Create the screen
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption('Bouncing Ball Simulation')
+
+# Load sound
+bounce_sound = pygame.mixer.Sound(BUMP_SOUND)
+
+# Ball properties
+ball_pos = [WIDTH // 2, HEIGHT // 2]
+ball_velocity = [5, 5]
+current_radius = BALL_RADIUS
+
+# Main loop
+clock = pygame.time.Clock()
+running = True
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # Move the ball
+    ball_pos[0] += ball_velocity[0]
+    ball_pos[1] += ball_velocity[1]
+
+    # Check for collision with the large circle
+    distance_from_center = math.sqrt((ball_pos[0] - WIDTH // 2) ** 2 + (ball_pos[1] - HEIGHT // 2) ** 2)
+
+    if distance_from_center + current_radius >= LARGE_CIRCLE_RADIUS:
+        # Bounce
+        ball_velocity[0] = -ball_velocity[0]
+        ball_velocity[1] = -ball_velocity[1]
+        current_radius += 5  # Increase the ball's radius
+        bounce_sound.play()  # Play sound
+        pygame.time.delay(500)  # Delay for sound effect duration
+
+    # Clear screen
+    screen.fill(BACKGROUND_COLOR)
+
+    # Draw the large circle
+    pygame.draw.circle(screen, (0, 0, 0), (WIDTH // 2, HEIGHT // 2), LARGE_CIRCLE_RADIUS, 2)
+
+    # Draw the ball
+    pygame.draw.circle(screen, BALL_COLOR, (int(ball_pos[0]), int(ball_pos[1])), current_radius)
+
+    # Update the display
+    pygame.display.flip()
+    clock.tick(FPS)
+
+# Quit Pygame
+pygame.quit()
+sys.exit()
